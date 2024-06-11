@@ -14,4 +14,9 @@ type ToDo struct{
 }
 
 //define function to get toDos
-
+func getToDos(c *fiber.Ctx) error{
+db:=database.DBConn
+var todos []ToDo
+db.Find(&todos);
+return c.JSON(&todos);
+}
