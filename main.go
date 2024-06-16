@@ -9,8 +9,9 @@ import (
 	"gorm.io/gorm"
 	)
 
-func helloWorld(c *fiber.Ctx) error{
-	return c.SendString("Welcome")
+func welcomeMessage(c *fiber.Ctx) error{
+	return c.SendString("Welcome 😊")
+
 }
 func initDatabase() {
 	var err error
@@ -31,7 +32,7 @@ func setupRoutes(app *fiber.App){
 func main(){
 	app:=fiber.New();
 	initDatabase()
-	app.Get("/",helloWorld);
+	app.Get("/",welcomeMessage);
 	setupRoutes(app)
 	app.Listen(":8000");
 }

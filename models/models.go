@@ -33,6 +33,39 @@ func GetToDoById(c *fiber.Ctx) error{
 	 } 
 	return c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Fetched Successfully", "data":&todo});
 	}
+	func UpdateToDoById(c *fiber.Ctx) error{
+		id:=c.Params("id")
+		// task structure
+		type UpdateToDo struct{
+			Title string `json:"title"`
+			Completed bool `json:"completed"`
+		}
+		if id == "" {
+			return c.Status(400).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Id is required"})
+		}
+		db:=database.DBConn
+		var todo ToDo
+
+		// find task by id
+		err:=db.Find(&todo,id).Error
+		if(err!=nil){
+			return c.Status(404).JSON(fiber.Map{"responseCode":0, "responseMessage":"Task Not Found"});
+		 }
+		 var updateToDo UpdateToDo 
+		 // validate inputs
+		err=c.BodyParser(&updateToDo)
+		if(err!=nil){
+			return c.Status(500).JSON(fiber.Map{"responseCode":0, "responseMessage":"Missing Parameters"});
+		}
+		// set new values
+		todo.Title=updateToDo.Title
+		todo.Completed=updateToDo.Completed
+
+		//save changes
+		db.Save(&todo);
+		retu
+		rn c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Fetched Successfully", "data":&todo});
+		}
 //define function to create toDos
 func CreateToDos(c *fiber.Ctx) error{
 	db:=database.DBConn
