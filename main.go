@@ -24,8 +24,9 @@ func initDatabase() {
 	fmt.Println("Migrated DB!")
 }
 func setupRoutes(app *fiber.App){
-	app.Get("api/todos/get-all",models.GetToDos);
+	app.Post("api/todos/get-all",models.GetToDos);
 	app.Post("api/todos/create",models.CreateToDos);
+	app.Post("api/todos/get/:id",models.GetToDoById);
 }
 func main(){
 	app:=fiber.New();
