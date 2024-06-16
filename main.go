@@ -20,9 +20,9 @@ func initDatabase() {
 	if err != nil {
 		panic("Failed to connect to db")
 	}
-	fmt.Println("Database connected!")
+	fmt.Println("Database connected! 😊")
 	database.DBConn.AutoMigrate(&models.ToDo{})
-	fmt.Println("Migrated DB!")
+	fmt.Println("Migrated DB! 😊")
 }
 func setupRoutes(app *fiber.App){
 	app.Post("api/todos/get-all",models.GetToDos);
