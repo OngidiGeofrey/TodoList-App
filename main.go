@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/mysql"
 	"codebrains.io/todolist/database"
 	"codebrains.io/todolist/models"
@@ -33,6 +34,7 @@ func setupRoutes(app *fiber.App){
 }
 func main(){
 	app:=fiber.New();
+	app.Use(cors.New())
 	initDatabase()
 	app.Get("/",welcomeMessage);
 	setupRoutes(app)
