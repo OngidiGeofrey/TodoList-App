@@ -28,6 +28,8 @@ func setupRoutes(app *fiber.App){
 	app.Post("api/todos/get-all",models.GetToDos);
 	app.Post("api/todos/create",models.CreateToDos);
 	app.Post("api/todos/get/:id",models.GetToDoById);
+	app.Post("api/todos/update/:id",models.UpdateToDoById);
+	app.Post("api/todos/delete/:id",models.DeleteToDoById);
 }
 func main(){
 	app:=fiber.New();

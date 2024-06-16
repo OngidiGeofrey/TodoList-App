@@ -3,6 +3,7 @@ package models
 import(
 	"codebrains.io/todolist/database"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 // define the toDo model 
@@ -33,7 +34,9 @@ func GetToDoById(c *fiber.Ctx) error{
 	 } 
 	return c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Fetched Successfully", "data":&todo});
 	}
-	func UpdateToDoById(c *fiber.Ctx) error{
+
+	// update task by Id
+func UpdateToDoById(c *fiber.Ctx) error{
 		id:=c.Params("id")
 		// task structure
 		type UpdateToDo struct{
@@ -48,9 +51,12 @@ func GetToDoById(c *fiber.Ctx) error{
 
 		// find task by id
 		err:=db.Find(&todo,id).Error
-		if(err!=nil){
-			return c.Status(404).JSON(fiber.Map{"responseCode":0, "responseMessage":"Task Not Found"});
-		 }
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return c.Status(404).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Task not found"})
+			}
+			return c.Status(500).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Something went wrong"})
+		}
 		 var updateToDo UpdateToDo 
 		 // validate inputs
 		err=c.BodyParser(&updateToDo)
@@ -62,9 +68,8 @@ func GetToDoById(c *fiber.Ctx) error{
 		todo.Completed=updateToDo.Completed
 
 		//save changes
-		db.Save(&todo);
-		retu
-		rn c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Fetched Successfully", "data":&todo});
+		db.Save(&todo)
+		return c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Updated Successfully", "data":&todo})
 		}
 //define function to create toDos
 func CreateToDos(c *fiber.Ctx) error{
@@ -88,4 +93,26 @@ func CreateToDos(c *fiber.Ctx) error{
 		return c.Status(500).JSON(fiber.Map{"responseCode":0, "responseMessage":"Something went Wrong"});
 	 } 
 	 return c.JSON(fiber.Map{"responseCode":1, "responseMessage":"Task Created Successfully", "data":&todo});
+}
+
+func DeleteToDoById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(400).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Id is required"})
+	}
+	db := database.DBConn
+	var todo ToDo
+	err := db.First(&todo, id).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(404).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Task not found"})
+		}
+		return c.Status(500).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Something went wrong"})
+	}
+
+	err = db.Delete(&todo).Error
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"responseCode": 0, "responseMessage": "Something went wrong"})
+	}
+	return c.Status(200).JSON(fiber.Map{"responseCode": 1, "responseMessage": "Task deleted successfully"})
 }
